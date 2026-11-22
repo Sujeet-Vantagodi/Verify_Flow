@@ -1,0 +1,16 @@
+{
+  "name": "phone-otp-verification-system",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A full-stack simulated SMS OTP verification system.",
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev": "npm run dev --workspace frontend & npm run dev --workspace backend",
+    "build": "npm run build --workspace frontend && npm run build --workspace backend",
+    "test": "npm run test --workspace backend"
+  }
+}

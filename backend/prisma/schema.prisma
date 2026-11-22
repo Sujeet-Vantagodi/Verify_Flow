@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  EXPIRED
+  LOCKED
+}
+
+model VerificationSession {
+  id             String             @id @default(cuid())
+  phoneNumber    String
+  otpHash        String
+  expiresAt      DateTime
+  attempts       Int                @default(0)
+  status         VerificationStatus @default(PENDING)
+  verifiedAt     DateTime?
+  lastResentAt   DateTime?
+  createdAt      DateTime           @default(now())
+  messages       InboxMessage[]
+  pairings       InboxPairing[]
+  devices        InboxDevice[]
+
+  @@index([phoneNumber, createdAt])
+  @@index([status, expiresAt])
+}
+
+model InboxMessage {
+  id                   String             @id @default(cuid())
+  verificationSessionId String
+  sender               String
+  recipient            String
+  messageContent       String
+  createdAt            DateTime           @default(now())
+  expiresAt             DateTime
+  readAt                DateTime?
+  verificationSession  VerificationSession @relation(fields: [verificationSessionId], references: [id], onDelete: Cascade)
+
+  @@index([verificationSessionId, createdAt])
+}
+
+model InboxPairing {
+  id                   String             @id @default(cuid())
+  verificationSessionId String
+  pairingCodeHash      String
+  expiresAt            DateTime
+  usedAt               DateTime?
+  createdAt            DateTime           @default(now())
+  verificationSession  VerificationSession @relation(fields: [verificationSessionId], references: [id], onDelete: Cascade)
+
+  @@index([verificationSessionId, expiresAt])
+  @@index([pairingCodeHash, expiresAt])
+}
+
+model InboxDevice {
+  id                   String             @id @default(cuid())
+  verificationSessionId String
+  deviceTokenHash      String             @unique
+  createdAt            DateTime           @default(now())
+  lastActiveAt         DateTime           @default(now())
+  verificationSession  VerificationSession @relation(fields: [verificationSessionId], references: [id], onDelete: Cascade)
+
+  @@index([verificationSessionId, lastActiveAt])
+}
