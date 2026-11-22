@@ -20,7 +20,7 @@ export async function getMessages(_request: Request, response: Response) {
   return sendSuccess(response, "Inbox messages retrieved successfully.", { messages });
 }
 
-export async function getMessage(request: Request, response: Response) {
+export async function getMessage(request: Request<{ id: string }>, response: Response) {
   const device = response.locals.inboxDevice as { verificationSessionId: string };
   const message = await getInboxMessage(request.params.id, device.verificationSessionId);
 

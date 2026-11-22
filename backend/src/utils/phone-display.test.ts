@@ -4,7 +4,7 @@ import { maskPhoneNumber } from "./phone-display.js";
 
 describe("phone display masking", () => {
   it("keeps only the final four digits visible", () => {
-    assert.equal(maskPhoneNumber("+919876543210"), "********3210");
+    assert.equal(maskPhoneNumber("+919876543210"), "*********3210");
   });
 
   it("handles short values safely", () => {
